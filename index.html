@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10091f">
+  <meta name="description" content="Lago Maldito: un videojuego de criaturas nocturnas creado con Canvas 2D.">
+  <title>Lago Maldito | Criaturas de la noche</title>
+  <link rel="icon" type="image/png" href="assets/icons/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <header class="site-header">
+    <nav class="navbar navbar-expand-lg container py-3">
+      <a class="brand-mark" href="#inicio" aria-label="Lago Maldito, inicio"><span class="brand-icon">☾</span><span>LAGO <b>MALDITO</b><small>CRIATURAS DE LA NOCHE</small></span></a>
+      <div class="ms-auto d-flex align-items-center gap-2 flex-wrap justify-content-end">
+        <span class="live-pill"><i></i> PORTAL ACTIVO</span>
+        <button id="soundButton" class="control-button" type="button" aria-pressed="false">♫ <span>Activar sonido</span></button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="inicio" class="container main-content">
+    <section class="hero-section">
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> EXPEDICIÓN NOCTURNA · 31 DE OCTUBRE</p>
+        <h1>El lago <span>despierta.</span></h1>
+        <p class="hero-description">La niebla oculta algo. Enciende tu antorcha, encuentra a las criaturas y rompe la maldición antes de que desaparezcan entre las sombras.</p>
+        <div class="hero-actions">
+          <button id="startButton" class="primary-button" type="button"><span>▶</span> Comenzar expedición</button>
+          <button id="instructionsButton" class="ghost-button" type="button">¿Cómo se juega? <span>↗</span></button>
+        </div>
+        <div class="hero-stats">
+          <div><strong>25</strong><span>CRIATURAS ACTIVAS</span></div>
+          <div><strong>03</strong><span>ESPECIES MALDITAS</span></div>
+          <div><strong>∞</strong><span>NOCHES DE CAZA</span></div>
+        </div>
+      </div>
+      
+      <div id="radarCard" class="hero-art hero-radar-card" role="button" tabindex="0" title="Haz clic para enviar un pulso de escaneo">
+        <canvas id="radarCanvas"></canvas>
+        <div class="radar-overlay-info">
+          <div class="hero-art-label"><span class="pulse-dot"></span> RADAR ESPECTRAL ACTIVO</div>
+          <p id="radarStatusText">Cargando escáner...</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="gameShell" class="game-shell" aria-label="Videojuego Lago Maldito">
+      <div class="game-topbar">
+        <div class="game-title"><span class="game-symbol">✹</span><div><h2>El claro de las almas</h2><p>Haz clic en las criaturas antes de que vuelvan a la niebla.</p></div></div>
+        <div class="score-wrap"><span>ALMAS CAPTURADAS</span><strong id="score">000</strong></div>
+      </div>
+      <div class="game-toolbar">
+        <div class="game-status"><span class="status-light"></span><span id="statusText">Portal abierto · expedición lista</span></div>
+        <div class="toolbar-actions">
+          <!-- SELECTOR DE VELOCIDAD -->
+          <select id="speedSelect" class="speed-select-btn" title="Ajustar velocidad de las criaturas">
+            <option value="1">⚡ Lento</option>
+            <option value="2" selected>⚡ Normal</option>
+            <option value="6">⚡ Rápido (Pesadilla)</option>
+          </select>
+          <button id="fullscreenButton" class="mini-button fullscreen-button" type="button" title="Pantalla completa">⛶ <span>Pantalla Completa</span></button>
+          <button id="revealButton" class="mini-button torch-button" type="button" title="Resaltar posición de las sombras">🔮 <span>Revelar sombras</span></button>
+          <button id="pauseButton" class="mini-button" type="button">Ⅱ <span>Pausar</span></button>
+          <button id="resetButton" class="mini-button" type="button">↻ <span>Reiniciar</span></button>
+        </div>
+      </div>
+      <div id="canvasWrap" class="canvas-wrap">
+        <canvas id="gameCanvas" aria-label="Juego: captura las criaturas que se mueven por el lago"></canvas>
+        <div class="canvas-vignette"></div>
+        <div id="introOverlay" class="intro-overlay">
+          <div class="intro-seal">☾</div><p class="eyebrow">NO TODAS LAS ALMAS DESCANSAN</p>
+          <h3>¿Te atreves a entrar?</h3><p>La noche te observa. Usa tu antorcha para revelar lo que se esconde.</p>
+          <button id="overlayStartButton" class="primary-button" type="button">Entrar al lago <span>→</span></button>
+        </div>
+        <div id="toast" class="game-toast" role="status" aria-live="polite"></div>
+        <div id="customCursor" class="custom-cursor" aria-hidden="true"><span class="cursor-flame"></span><span class="cursor-stick"></span><span class="cursor-glow"></span></div>
+      </div>
+      <div class="game-bottom">
+        <p><span class="keycap">CLICK</span> Captura una criatura <span class="separator">/</span> <span class="keycap">P</span> Pausa <span class="separator">/</span> Mueve el ratón para iluminar la niebla</p>
+        <div class="progress-track"><span id="progressBar"></span></div>
+      </div>
+    </section>
+
+    <section id="instructionsPanel" class="instructions-panel" hidden>
+      <div class="instruction-heading"><span>✧</span><div><h2>Guía del cazador</h2><p>Unos segundos bastan para aprender a sobrevivir.</p></div><button id="closeInstructionsButton" class="close-button" type="button" aria-label="Cerrar instrucciones">×</button></div>
+      <div class="row g-3">
+        <div class="col-md-4"><article class="instruction-card"><span class="instruction-number">01</span><h3>Encuentra</h3><p>Busca murciélagos, fantasmas y ojos espectrales entre la bruma.</p></article></div>
+        <div class="col-md-4"><article class="instruction-card"><span class="instruction-number">02</span><h3>Captura</h3><p>Haz clic sobre una criatura. Suma un alma y aparecerá otra en un punto aleatorio.</p></article></div>
+        <div class="col-md-4"><article class="instruction-card"><span class="instruction-number">03</span><h3>Sobrevive</h3><p>Ajusta la velocidad desde la barra superior, activa la pantalla completa y usa Revelar Sombras.</p></article></div>
+      </div>
+    </section>
+
+    <section class="lower-strip">
+      <div class="quote-mark">“</div><p>Si ves dos luces en el agua, no asumas que una es tu reflejo.</p><span>— DIARIO DEL GUARDABOSQUES</span>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div><a class="footer-brand" href="#inicio">☾ LAGO MALDITO</a><p>Experimento de animación e interactividad con Canvas 2D.</p></div>
+      <div class="credits"><span>DESARROLLADO POR</span><strong>Pedro Carlos Montalbo Castro</strong><small>Número de control: 24200096 · Ingeniería en Sistemas Computacionales</small></div>
+      <a class="back-top" href="#inicio" aria-label="Volver al inicio">↑</a>
+    </div>
+  </footer>
+  <audio id="ambientAudio" src="assets/audio/ambiente.mp3" loop preload="none"></audio>
+</body>
+</html>

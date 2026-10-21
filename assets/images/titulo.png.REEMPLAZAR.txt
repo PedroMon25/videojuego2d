@@ -1,0 +1,2 @@
+Reemplaza este aviso por el recurso real: titulo.png
+Ruta esperada: assets/images/titulo.png
